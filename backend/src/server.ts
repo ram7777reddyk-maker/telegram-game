@@ -2,14 +2,17 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { createServer } from "http";
-import { pool } from "./database/postgres.js";
+
+import authRoutes from "./auth/authRoutes.js";
 import { redisClient } from "./database/redis.js";
 import { setupWebSocket } from "./websocket/server.js";
 
 dotenv.config();
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const httpServer = createServer(app);
+
+const PORT = Number(process.env.PORT || 3000);
 
 app.use(cors());
 app.use(express.json());
@@ -24,66 +27,68 @@ app.get("/health", (_req, res) => {
 
 app.get("/health/db", async (_req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT current_database(), current_user, NOW() AS time"
-    );
+    const { pool } = await import("./database/postgres.js");
+
+    await pool.query("SELECT 1");
 
     res.json({
       success: true,
-      database: "postgresql",
-      status: "healthy",
-      databaseName: result.rows[0].current_database,
-      user: result.rows[0].current_user,
-      time: result.rows[0].time
+      database: "connected"
     });
   } catch (error) {
-    console.error("Database connection error:", error);
+    console.error("Database health check failed:", error);
 
     res.status(500).json({
       success: false,
-      database: "postgresql",
-      status: "unhealthy"
+      database: "disconnected"
     });
   }
 });
 
 app.get("/health/redis", async (_req, res) => {
   try {
-    const pong = await redisClient.ping();
+    const connected = redisClient.isReady;
+
+    if (!connected) {
+      res.status(500).json({
+        success: false,
+        redis: "disconnected"
+      });
+      return;
+    }
 
     res.json({
       success: true,
-      redis: "memurai",
-      status: "healthy",
-      response: pong
+      redis: "connected"
     });
   } catch (error) {
-    console.error("Redis connection error:", error);
+    console.error("Redis health check failed:", error);
 
     res.status(500).json({
       success: false,
-      redis: "memurai",
-      status: "unhealthy"
+      redis: "disconnected"
     });
   }
 });
 
+app.use("/auth", authRoutes);
+
+setupWebSocket(httpServer);
+
 async function startServer() {
   try {
-    await redisClient.connect();
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
+    }
 
     console.log("Redis connected successfully");
-
-    const httpServer = createServer(app);
-
-    setupWebSocket(httpServer);
 
     httpServer.listen(PORT, () => {
       console.log(`Backend running on port ${PORT}`);
       console.log(`WebSocket running on ws://localhost:${PORT}/ws`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("Failed to start backend:", error);
     process.exit(1);
   }
 }

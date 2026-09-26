@@ -1,5 +1,10 @@
-﻿import { useEffect, useState } from "react";
-import Card from "./components/Card";import GameOverOverlay from "./components/GameOverOverlay";
+﻿import { useEffect, useRef, useState } from "react";
+import type { PointerEvent } from "react";
+import Card from "./components/Card";
+import GameOverOverlay from "./components/GameOverOverlay";
+import LandingPage from "./LandingPage";
+import AuthPanel from "./auth/AuthPanel";
+import HomePage from "./home/HomePage";
 import {
   gameWebSocket
 } from "./services/websocket";
@@ -9,6 +14,48 @@ import type {
 } from "./types/game";
 
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
+  const [showHome, setShowHome] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(0);
+
+  useEffect(() => {
+    const token = localStorage.getItem("rummy_auth_token");
+
+    if (!token) {
+      return;
+    }
+
+    const apiUrl =
+      import.meta.env.VITE_API_URL ||
+      "http://localhost:3000";
+
+    fetch(`${apiUrl}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error("Failed to load account");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (data?.success && data?.wallet) {
+          setWalletBalance(
+            Number(data.wallet.balance || 0)
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(
+          "Failed to load wallet:",
+          error
+        );
+      });
+  }, []);
   const [connected, setConnected] =
     useState(false);
 
@@ -33,64 +80,169 @@ function App() {
   const [selectedIndex, setSelectedIndex] =
     useState<number | null>(null);
 
-  const [draggedIndex, setDraggedIndex] =
-    useState<number | null>(null);
+  const draggedIndexRef = useRef<number | null>(null);
+  const hasDraggedRef = useRef(false);
 
-  const handleDragStart = (
+  const handlePointerDown = (
+    event: PointerEvent<HTMLButtonElement>,
     index: number
   ) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragOver = (
-    event: React.DragEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (
-    event: React.DragEvent<HTMLButtonElement>,
-    dropIndex: number
-  ) => {
     event.preventDefault();
 
-    if (
-      draggedIndex === null ||
-      draggedIndex === dropIndex
-    ) {
-      setDraggedIndex(null);
+    draggedIndexRef.current = index;
+    hasDraggedRef.current = false;
+
+    event.currentTarget.setPointerCapture(
+      event.pointerId
+    );
+
+
+  };
+
+  const handlePointerMove = (
+    event: PointerEvent<HTMLButtonElement>
+  ) => {
+    const sourceIndex =
+      draggedIndexRef.current;
+
+    if (sourceIndex === null) {
       return;
     }
 
+    event.preventDefault();
+
+    const elements =
+      document.elementsFromPoint(
+        event.clientX,
+        event.clientY
+      );
+
+    const cardElement =
+      elements.find(element =>
+        element instanceof HTMLElement &&
+        element.classList.contains("playing-card")
+      ) as HTMLElement | undefined;
+
+    if (!cardElement) {
+      return;
+    }
+
+    const cardsInHand =
+      Array.from(
+        document.querySelectorAll(
+          ".hand .playing-card"
+        )
+      ) as HTMLElement[];
+
+    const targetElement =
+      cardsInHand.find(
+        element => element === cardElement
+      );
+
+    if (!targetElement) {
+      return;
+    }
+
+    const targetIndex =
+      cardsInHand.indexOf(targetElement);
+
+    if (
+      targetIndex < 0 ||
+      targetIndex === sourceIndex
+    ) {
+      return;
+    }
+
+    hasDraggedRef.current = true;
+
     setCards(currentCards => {
-      const updatedCards = [...currentCards];
+      if (
+        sourceIndex < 0 ||
+        sourceIndex >= currentCards.length
+      ) {
+        return currentCards;
+      }
+
+      const updatedCards = [
+        ...currentCards
+      ];
 
       const [movedCard] =
         updatedCards.splice(
-          draggedIndex,
+          sourceIndex,
           1
         );
 
       updatedCards.splice(
-        dropIndex,
+        targetIndex,
         0,
         movedCard
       );
 
-      const cardOrder =
-        updatedCards.map(card =>
-          `${card.suit}-${card.rank}-${card.isJoker ? "joker" : "normal"}`
-        );
-
-      gameWebSocket.reorderCards(
-        cardOrder
-      );
+      draggedIndexRef.current =
+        targetIndex;
 
       return updatedCards;
     });
+  };
 
-    setSelectedIndex(null);
-    setDraggedIndex(null);
+  const handlePointerUp = (
+    event: PointerEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+
+    const finalIndex =
+      draggedIndexRef.current;
+
+    if (finalIndex !== null) {
+      try {
+        event.currentTarget.releasePointerCapture(
+          event.pointerId
+        );
+      } catch {
+        // Pointer capture may already be released.
+      }
+    }
+
+    if (
+      hasDraggedRef.current &&
+      finalIndex !== null
+    ) {
+      setCards(currentCards => {
+        const cardOrder =
+          currentCards.map(card =>
+            `${card.suit}-${card.rank}-${card.isJoker ? "joker" : "normal"}`
+          );
+
+        gameWebSocket.reorderCards(
+          cardOrder
+        );
+
+        return currentCards;
+      });
+
+      setSelectedIndex(null);
+    }
+
+    draggedIndexRef.current = null;
+    hasDraggedRef.current = false;
+
+  };
+
+  const handlePointerCancel = (
+    event: PointerEvent<HTMLButtonElement>
+  ) => {
+    try {
+      event.currentTarget.releasePointerCapture(
+        event.pointerId
+      );
+    } catch {
+      // Pointer capture may already be released.
+    }
+
+    draggedIndexRef.current = null;
+    hasDraggedRef.current = false;
+
   };
   const [message, setMessage] =
     useState("Connecting...");
@@ -369,6 +521,81 @@ function App() {
   const isPlaying =
     game?.status === "playing";
 
+  if (authMode) {
+    return (
+      <AuthPanel
+        mode={authMode}
+        onBack={() => {
+          setAuthMode(null);
+        }}
+        onAuthenticated={(
+          token,
+          name,
+          mobile
+        ) => {
+          localStorage.setItem(
+            "rummy_auth_token",
+            token
+          );
+
+          localStorage.setItem(
+            "rummy_user",
+            JSON.stringify({
+              name,
+              mobile
+            })
+          );
+
+          setUsername(name);
+          setShowLanding(false);
+        setShowHome(true);
+          setAuthMode(null);
+        }}
+      />
+    );
+  }
+
+  if (showHome) {
+  return (
+    <HomePage
+      walletBalance={walletBalance}
+      onPlayRoom={(entryFee) => {
+        console.log("Selected room:", entryFee);
+        setShowHome(false);
+      }}
+      onWallet={() => {
+        console.log("Wallet selected");
+      }}
+      onProfile={() => {
+        console.log("Profile selected");
+      }}
+      onLogout={() => {
+        localStorage.removeItem("rummy_auth_token");
+        localStorage.removeItem("rummy_user");
+        setShowHome(false);
+        setShowLanding(true);
+      }}
+    />
+  );
+}
+
+if (showLanding) {
+    return (
+      <LandingPage
+        onGuest={() => {
+          setShowLanding(false);
+        setShowHome(true);
+        }}
+        onSignIn={() => {
+          setAuthMode("signin");
+        }}
+        onSignUp={() => {
+          setAuthMode("signup");
+        }}
+      />
+    );
+  }
+
   return (
     <div className="game-page">
 
@@ -386,8 +613,8 @@ function App() {
 
           <span>
             {connected
-              ? "● Connected"
-              : "○ Disconnected"}
+              ? "? Connected"
+              : "? Disconnected"}
           </span>
 
           <strong>
@@ -552,7 +779,7 @@ function App() {
                   }
                 >
                   <span>
-                    🂠
+                    ??
                   </span>
 
                   <small>
@@ -643,18 +870,20 @@ function App() {
                             : index
                         )
                       }
-                      draggable={true}
-                      onDragStart={() =>
-                        handleDragStart(index)
-                      }
-                      onDragOver={
-                        handleDragOver
-                      }
-                      onDrop={event =>
-                        handleDrop(
+                      onPointerDown={event =>
+                        handlePointerDown(
                           event,
                           index
                         )
+                      }
+                      onPointerMove={
+                        handlePointerMove
+                      }
+                      onPointerUp={
+                        handlePointerUp
+                      }
+                      onPointerCancel={
+                        handlePointerCancel
                       }
                     />
                   )
@@ -726,6 +955,27 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

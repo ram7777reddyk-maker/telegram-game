@@ -1,0 +1,273 @@
+.home-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 20px 18px 100px;
+  background:
+    radial-gradient(circle at top left, rgba(197, 157, 95, 0.12), transparent 35%),
+    linear-gradient(180deg, #10100f 0%, #181714 100%);
+  color: #f5f0e8;
+}
+
+.home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 0 24px;
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-brand-symbol {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #c59d5f;
+  color: #17130d;
+  font-size: 25px;
+  font-weight: 800;
+  box-shadow: 0 8px 24px rgba(197, 157, 95, 0.2);
+}
+
+.home-brand h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 4px;
+}
+
+.home-brand span {
+  display: block;
+  margin-top: 3px;
+  color: #a7a19a;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.wallet-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 13px;
+  border: 1px solid rgba(197, 157, 95, 0.35);
+  border-radius: 14px;
+  background: rgba(197, 157, 95, 0.08);
+}
+
+.wallet-icon {
+  font-size: 21px;
+}
+
+.wallet-badge small {
+  display: block;
+  color: #938d84;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+
+.wallet-badge strong {
+  display: block;
+  margin-top: 2px;
+  color: #e3bd76;
+  font-size: 17px;
+}
+
+.room-section {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.room-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+
+.room-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.room-heading-line {
+  width: 34px;
+  height: 1px;
+  background: rgba(197, 157, 95, 0.45);
+}
+
+.room-subtitle {
+  margin: 8px 0 24px;
+  text-align: center;
+  color: #918b83;
+  font-size: 13px;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.room-card {
+  padding: 18px;
+  border: 1px solid rgba(197, 157, 95, 0.24);
+  border-radius: 18px;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.055),
+    rgba(255, 255, 255, 0.018)
+  );
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.room-card-locked {
+  opacity: 0.45;
+}
+
+.room-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-level {
+  color: #c9a76a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.room-lock {
+  font-size: 14px;
+}
+
+.room-entry {
+  margin-top: 18px;
+  color: #f4eee4;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.room-entry span {
+  margin-right: 5px;
+  font-size: 18px;
+}
+
+.room-card p {
+  margin: 5px 0 17px;
+  color: #89837b;
+  font-size: 11px;
+}
+
+.room-card button {
+  width: 100%;
+  min-height: 42px;
+  border: 0;
+  border-radius: 11px;
+  background: #c59d5f;
+  color: #18130c;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+.room-card button:disabled {
+  background: #4a4640;
+  color: #8e8982;
+  cursor: not-allowed;
+}
+
+.home-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 15, 14, 0.97);
+  backdrop-filter: blur(12px);
+}
+
+.home-nav button {
+  border: 0;
+  background: transparent;
+  color: #716c65;
+  padding: 6px 4px;
+  cursor: pointer;
+}
+
+.home-nav button span {
+  display: block;
+  font-size: 18px;
+}
+
+.home-nav button small {
+  display: block;
+  margin-top: 3px;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.home-nav .home-nav-active {
+  color: #c59d5f;
+}
+
+.home-logout {
+  display: block;
+  margin: 24px auto 0;
+  border: 0;
+  background: transparent;
+  color: #6e6962;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .home-page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .home-header {
+    align-items: flex-start;
+  }
+
+  .home-brand-symbol {
+    width: 42px;
+    height: 42px;
+  }
+
+  .wallet-badge {
+    padding: 8px 10px;
+  }
+
+  .room-grid {
+    gap: 10px;
+  }
+
+  .room-card {
+    padding: 14px;
+  }
+
+  .room-entry {
+    font-size: 21px;
+  }
+
+  .room-card button {
+    font-size: 10px;
+  }
+}

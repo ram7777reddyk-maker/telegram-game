@@ -1,14 +1,14 @@
-﻿import type { DragEvent } from "react";
+import type { PointerEvent } from "react";
 import type { Card as CardType } from "../types/game";
 
 interface CardProps {
   card: CardType;
   selected?: boolean;
   onClick?: () => void;
-  draggable?: boolean;
-  onDragStart?: (event: DragEvent<HTMLButtonElement>) => void;
-  onDragOver?: (event: DragEvent<HTMLButtonElement>) => void;
-  onDrop?: (event: DragEvent<HTMLButtonElement>) => void;
+  onPointerDown?: (event: PointerEvent<HTMLButtonElement>) => void;
+  onPointerMove?: (event: PointerEvent<HTMLButtonElement>) => void;
+  onPointerUp?: (event: PointerEvent<HTMLButtonElement>) => void;
+  onPointerCancel?: (event: PointerEvent<HTMLButtonElement>) => void;
 }
 
 function getSuitSymbol(
@@ -32,10 +32,10 @@ export default function Card({
   card,
   selected = false,
   onClick,
-  draggable = false,
-  onDragStart,
-  onDragOver,
-  onDrop
+  onPointerDown,
+  onPointerMove,
+  onPointerUp,
+  onPointerCancel
 }: CardProps) {
   const symbol = getSuitSymbol(card.suit);
 
@@ -49,10 +49,15 @@ export default function Card({
         selected ? "selected" : ""
       } ${isRed ? "red" : "black"}`}
       onClick={onClick}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      draggable={draggable}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerCancel}
+      style={{
+        touchAction: "none",
+        userSelect: "none",
+        WebkitUserSelect: "none"
+      }}
       type="button"
     >
       <span className="card-rank">

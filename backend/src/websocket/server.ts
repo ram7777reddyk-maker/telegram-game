@@ -800,96 +800,6 @@ export function setupWebSocket(server: Server) {
 
             break;
           }
-          case "DECLARE": {
-            if (
-              !currentRoomId ||
-              !currentPlayerId
-            ) {
-              socket.send(
-                JSON.stringify({
-                  type: "ERROR",
-                  message:
-                    "You must join a room first"
-                })
-              );
-
-              break;
-            }
-
-            try {
-              const valid =
-                gameManager.declareGame(
-                  currentRoomId,
-                  currentPlayerId
-                );
-
-              const updatedGame =
-                gameManager.getGame(
-                  currentRoomId
-                );
-
-              if (!updatedGame) {
-                throw new Error(
-                  "Game state not found"
-                );
-              }
-
-              await saveGameState(
-                updatedGame
-              );
-
-              if (valid) {
-                gameRoomManager.broadcast(
-                  currentRoomId,
-                  {
-                    type: "GAME_FINISHED",
-                    game:
-                      getPublicGameState(
-                        updatedGame
-                      )
-                  }
-                );
-
-                console.log(
-                  "VALID DECLARATION:",
-                  currentRoomId,
-                  currentPlayerId
-                );
-              } else {
-                socket.send(
-                  JSON.stringify({
-                    type: "INVALID_DECLARATION",
-                    message:
-                      "Invalid Rummy declaration",
-                    player:
-                      getPrivatePlayerState(
-                        updatedGame,
-                        currentPlayerId
-                      )
-                  })
-                );
-
-                console.log(
-                  "INVALID DECLARATION:",
-                  currentRoomId,
-                  currentPlayerId
-                );
-              }
-
-            } catch (error) {
-              socket.send(
-                JSON.stringify({
-                  type: "ERROR",
-                  message:
-                    error instanceof Error
-                      ? error.message
-                      : "Unable to declare"
-                })
-              );
-            }
-
-            break;
-          }
           case "LEAVE_ROOM": {
             if (
               currentRoomId &&
@@ -1025,6 +935,7 @@ export function setupWebSocket(server: Server) {
 
   return wss;
 }
+
 
 
 
