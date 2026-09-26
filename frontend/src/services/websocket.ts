@@ -6,15 +6,10 @@ import type {
 
 export interface ServerMessage {
   type: string;
-
   message?: string;
-
   roomId?: string;
-
   card?: Card;
-
   game?: PublicGameState;
-
   player?: PrivatePlayerState;
 }
 
@@ -29,33 +24,27 @@ class GameWebSocket {
     onOpen?: () => void,
     onClose?: () => void
   ): void {
-    this.socket =
-      new WebSocket(
-        "ws://192.168.0.6:3000/ws"
-      );
+    const wsUrl =
+      import.meta.env.VITE_WS_URL ||
+      "ws://192.168.0.6:3000/ws";
+
+    console.log("Connecting WebSocket:", wsUrl);
+
+    this.socket = new WebSocket(wsUrl);
 
     this.socket.onopen = () => {
-      console.log(
-        "WebSocket connected"
-      );
-
+      console.log("WebSocket connected");
       onOpen?.();
     };
 
     this.socket.onmessage = event => {
       try {
         const message =
-          JSON.parse(
-            event.data
-          ) as ServerMessage;
+          JSON.parse(event.data) as ServerMessage;
 
-        console.log(
-          "SERVER:",
-          message
-        );
+        console.log("SERVER:", message);
 
         onMessage(message);
-
       } catch (error) {
         console.error(
           "Invalid server message:",
@@ -64,36 +53,31 @@ class GameWebSocket {
       }
     };
 
-    this.socket.onclose = () => {
-      console.log(
-        "WebSocket disconnected"
+    this.socket.onerror = error => {
+      console.error("WebSocket error:", error);
+      console.error(
+        "WebSocket URL:",
+        this.socket?.url
+      );
+      console.error(
+        "WebSocket readyState:",
+        this.socket?.readyState
+      );
+    };
+
+    this.socket.onclose = event => {
+      console.error(
+        "WebSocket closed:",
+        "code=",
+        event.code,
+        "reason=",
+        event.reason,
+        "wasClean=",
+        event.wasClean
       );
 
       onClose?.();
     };
-
-    this.socket.onerror = error => {
-  console.error("WebSocket error:", error);
-  console.error("WebSocket URL:", this.socket?.url);
-  console.error(
-    "WebSocket readyState:",
-    this.socket?.readyState
-  );
-};
-
-this.socket.onclose = event => {
-  console.error(
-    "WebSocket closed:",
-    "code=",
-    event.code,
-    "reason=",
-    event.reason,
-    "wasClean=",
-    event.wasClean
-  );
-
-  onClose?.();
-};
   }
 
   send(
@@ -101,8 +85,7 @@ this.socket.onclose = event => {
   ): void {
     if (
       !this.socket ||
-      this.socket.readyState !==
-        WebSocket.OPEN
+      this.socket.readyState !== WebSocket.OPEN
     ) {
       console.error(
         "WebSocket is not connected"
@@ -111,10 +94,7 @@ this.socket.onclose = event => {
       return;
     }
 
-    console.log(
-      "CLIENT:",
-      message
-    );
+    console.log("CLIENT:", message);
 
     this.socket.send(
       JSON.stringify(message)
@@ -196,6 +176,3 @@ this.socket.onclose = event => {
 
 export const gameWebSocket =
   new GameWebSocket();
-
-
-
