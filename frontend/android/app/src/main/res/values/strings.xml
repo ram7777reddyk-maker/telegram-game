@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Telegram Rummy</string>
+    <string name="title_activity_main">Telegram Rummy</string>
+    <string name="package_name">com.telegramrummy.app</string>
+    <string name="custom_url_scheme">com.telegramrummy.app</string>
+</resources>
