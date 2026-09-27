@@ -63,6 +63,7 @@ export function setupWebSocket(server: Server) {
 
           case "CREATE_ROOM": {
             const entryFee = Number(data.entryFee ?? 500);
+            console.log("CREATE_ROOM received:", { entryFee, mode: data.mode });
             const mode =
               data.mode === "bot"
                 ? "bot"
@@ -1062,6 +1063,7 @@ export function setupWebSocket(server: Server) {
 
   return wss;
 }
+
 
 
 
