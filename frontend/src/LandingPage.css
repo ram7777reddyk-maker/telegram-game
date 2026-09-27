@@ -2,251 +2,392 @@
   min-height: 100vh;
   min-height: 100dvh;
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   display: flex;
-  align-items: center;
   justify-content: center;
   background:
-    radial-gradient(
-      circle at 50% 20%,
-      rgba(196, 160, 72, 0.14),
-      transparent 34%
-    ),
-    linear-gradient(
-      145deg,
-      #080b0a 0%,
-      #101613 48%,
-      #070908 100%
-    );
+    radial-gradient(circle at 50% 0%, rgba(196, 160, 72, 0.13), transparent 34%),
+    linear-gradient(145deg, #080b0a 0%, #101613 48%, #070908 100%);
   color: #f5f1e8;
-  padding: 24px;
+  padding: 20px;
   box-sizing: border-box;
-}
-
-.landing-content {
-  width: 100%;
-  max-width: 430px;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .landing-glow {
   position: absolute;
   border-radius: 50%;
   pointer-events: none;
-  filter: blur(70px);
-  opacity: 0.25;
+  filter: blur(80px);
+  opacity: 0.2;
 }
 
 .landing-glow-one {
-  width: 260px;
-  height: 260px;
-  top: -100px;
-  left: -80px;
+  width: 300px;
+  height: 300px;
+  top: -130px;
+  left: -100px;
   background: #b99a4b;
 }
 
 .landing-glow-two {
-  width: 220px;
-  height: 220px;
-  bottom: -80px;
-  right: -70px;
+  width: 260px;
+  height: 260px;
+  bottom: -100px;
+  right: -90px;
   background: #28583f;
 }
 
-.landing-brand {
-  text-align: center;
-  margin-bottom: 28px;
+.dashboard-content {
+  width: 100%;
+  max-width: 760px;
+  position: relative;
+  z-index: 2;
+  padding-bottom: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.dashboard-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .brand-symbol {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 12px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
   border: 1px solid rgba(207, 174, 92, 0.55);
-  border-radius: 50%;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #d5b76b;
-  font-size: 34px;
+  font-size: 25px;
+  font-weight: 800;
   background: rgba(255, 255, 255, 0.035);
   box-shadow:
-    0 0 30px rgba(190, 155, 70, 0.12),
-    inset 0 0 20px rgba(255, 255, 255, 0.025);
+    0 0 25px rgba(190, 155, 70, 0.1),
+    inset 0 0 18px rgba(255, 255, 255, 0.025);
 }
 
-.landing-brand h1 {
+.dashboard-brand h1 {
   margin: 0;
-  font-size: 42px;
+  font-size: 25px;
   line-height: 1;
-  letter-spacing: 0.18em;
-  font-weight: 700;
+  letter-spacing: 0.16em;
 }
 
-.brand-tagline {
-  margin: 10px 0 0;
-  color: #a9aaa4;
-  font-size: 11px;
-  letter-spacing: 0.3em;
-}
-
-.landing-card {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 24px;
-  background: rgba(19, 24, 21, 0.88);
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(18px);
-}
-
-.landing-card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #9c9f98;
-  font-size: 10px;
-  font-weight: 700;
+.dashboard-brand span {
+  display: block;
+  margin-top: 6px;
+  color: #969b93;
+  font-size: 9px;
   letter-spacing: 0.22em;
-  margin-bottom: 22px;
 }
 
-.landing-dot {
-  color: #c8a85d;
+.dashboard-wallet {
+  min-width: 92px;
+  padding: 10px 14px;
+  border: 1px solid rgba(212, 180, 101, 0.25);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  text-align: right;
+}
+
+.dashboard-wallet span {
+  display: block;
+  color: #8e918a;
   font-size: 8px;
+  letter-spacing: 0.18em;
 }
 
-.landing-card h2 {
-  margin: 0;
-  font-size: 27px;
-  font-weight: 650;
+.dashboard-wallet strong {
+  display: block;
+  margin-top: 3px;
+  color: #d8b96c;
+  font-size: 18px;
+  letter-spacing: 0.03em;
+}
+
+.dashboard-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  background: rgba(19, 24, 21, 0.82);
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.dashboard-eyebrow {
+  color: #b99a4b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+
+.dashboard-welcome h2 {
+  margin: 7px 0 5px;
+  font-size: 25px;
   letter-spacing: -0.02em;
 }
 
-.landing-description {
-  margin: 9px 0 25px;
-  color: #aeb1aa;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.landing-primary-button,
-.landing-secondary-button {
-  width: 100%;
-  min-height: 52px;
-  border-radius: 14px;
-  font: inherit;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    opacity 160ms ease,
-    background 160ms ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.landing-primary-button {
-  border: 1px solid #d4b465;
-  background: linear-gradient(
-    135deg,
-    #d5b66a,
-    #b08c3e
-  );
-  color: #11130f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  box-shadow: 0 10px 30px rgba(186, 146, 55, 0.18);
-}
-
-.button-arrow {
-  font-size: 20px;
-}
-
-.landing-secondary-button {
-  margin-top: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.035);
-  color: #eeeae0;
-}
-
-.landing-primary-button:active,
-.landing-secondary-button:active {
-  transform: scale(0.98);
-}
-
-.landing-signup {
-  margin-top: 23px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
+.dashboard-welcome p {
+  margin: 0;
+  color: #999e96;
   font-size: 13px;
-  color: #969a92;
 }
 
-.landing-signup button {
-  border: 0;
-  padding: 4px;
-  background: transparent;
-  color: #d3b267;
+.dashboard-account-button {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid rgba(212, 180, 101, 0.5);
+  border-radius: 12px;
+  background: rgba(212, 180, 101, 0.08);
+  color: #d6b86b;
   font: inherit;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   cursor: pointer;
-  letter-spacing: 0.04em;
 }
 
-.landing-footer {
-  margin-top: 22px;
+.dashboard-section-heading {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #6f756d;
+}
+
+.dashboard-section-heading span {
+  height: 1px;
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-section-heading h3 {
+  margin: 0;
+  color: #d6d1c5;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+}
+
+.dashboard-section-subtitle {
+  margin: 8px 0 18px;
+  text-align: center;
+  color: #777d75;
+  font-size: 12px;
+}
+
+.dashboard-room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard-room-card {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(19, 24, 21, 0.88);
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.dashboard-room-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-room-top span {
+  color: #d3b267;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.dashboard-room-top small {
+  color: #666c65;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+}
+
+.dashboard-entry {
+  margin-top: 20px;
+}
+
+.dashboard-entry small {
+  display: block;
+  color: #777d75;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+}
+
+.dashboard-entry strong {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 27px;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-entry span {
+  margin-left: 7px;
+  color: #8f948d;
   font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.dashboard-room-card p {
+  margin: 8px 0 15px;
+  color: #858b83;
+  font-size: 11px;
+}
+
+.dashboard-room-card button {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #c5a45b;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #d5b66a, #b08c3e);
+  color: #11130f;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.dashboard-room-card button:disabled {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.035);
+  color: #555b54;
+  cursor: not-allowed;
+}
+
+.dashboard-auth {
+  margin-top: 24px;
+  padding: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  color: #777d75;
+  font-size: 12px;
+}
+
+.dashboard-auth button {
+  border: 0;
+  padding: 5px;
+  background: transparent;
+  color: #d3b267;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.dashboard-auth-divider {
+  color: #555a53;
+}
+
+.dashboard-nav {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  background: rgba(12, 16, 14, 0.92);
+}
+
+.dashboard-nav button {
+  min-height: 52px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #686e67;
+  font: inherit;
+  cursor: pointer;
+}
+
+.dashboard-nav button span {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.dashboard-nav button small {
+  display: block;
+  margin-top: 3px;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.dashboard-nav .dashboard-nav-active {
+  background: rgba(205, 169, 82, 0.1);
+  color: #d3b267;
+}
+
+.dashboard-footer {
+  margin-top: 16px;
+  text-align: center;
+  color: #555b54;
+  font-size: 8px;
   letter-spacing: 0.24em;
 }
 
-.landing-footer span:first-child,
-.landing-footer span:last-child {
-  color: #9e8040;
-}
-
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   .landing-page {
-    padding: 18px;
+    padding: 16px;
   }
 
-  .landing-brand {
-    margin-bottom: 22px;
+  .dashboard-header {
+    margin-bottom: 18px;
   }
 
-  .brand-symbol {
-    width: 56px;
-    height: 56px;
-    font-size: 30px;
+  .dashboard-brand h1 {
+    font-size: 22px;
   }
 
-  .landing-brand h1 {
-    font-size: 36px;
+  .dashboard-wallet {
+    padding: 9px 11px;
   }
 
-  .landing-card {
-    padding: 24px 20px;
-    border-radius: 21px;
+  .dashboard-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 19px;
+  }
+
+  .dashboard-account-button {
+    width: 100%;
+  }
+
+  .dashboard-room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-room-card {
+    padding: 17px;
   }
 }
+
+/* Authentication screens */
 .auth-page {
   min-height: 100vh;
   display: flex;
