@@ -596,9 +596,9 @@ function App() {
         createRoom(selectedEntryFee, "bot");
       }}
       onFriend={() => {
-        console.log("Friend mode:", selectedEntryFee);
-        setShowGameMode(false);
-      }}
+          setShowGameMode(false);
+          createRoom(selectedEntryFee, "friend");
+        }}
       onOnline={() => {
         console.log("Online mode:", selectedEntryFee);
         setShowGameMode(false);
@@ -1012,6 +1012,9 @@ if (showLanding) {
 }
 
 export default App;
+
+
+
 
 
 
