@@ -6,10 +6,12 @@ import { gameRoomManager } from "./gameRoomManager.js";
 import {
   createRoomInDatabase,
   addPlayerToDatabase,
-  removePlayerFromDatabase
+  removePlayerFromDatabase,
+  createFriendGameInvite
 } from "../services/roomService.js";
 
 import { gameManager } from "../game/gameManager.js";
+import { rummyBotService, BOT_PLAYER_ID } from "../services/rummyBotService.js";
 
 import {
   getPublicGameState,
@@ -60,12 +62,62 @@ export function setupWebSocket(server: Server) {
           }
 
           case "CREATE_ROOM": {
-            const room = gameRoomManager.createRoom();
+            const entryFee = Number(data.entryFee ?? 500);
+            const mode =
+              data.mode === "bot"
+                ? "bot"
+                : data.mode === "friend"
+                  ? "friend"
+                  : data.mode === "online"
+                    ? "online"
+                    : "normal";
 
-            await createRoomInDatabase(room.roomId);
+            const allowedEntryFees = [
+              500,
+              1000,
+              2000,
+              5000
+            ];
+
+            if (!allowedEntryFees.includes(entryFee)) {
+              socket.send(
+                JSON.stringify({
+                  type: "ERROR",
+                  message: "Invalid room entry fee"
+                })
+              );
+              break;
+            }
+
+            if (
+              mode === "friend" &&
+              !Number.isInteger(Number(data.createdBy))
+            ) {
+              socket.send(
+                JSON.stringify({
+                  type: "ERROR",
+                  message:
+                    "A signed-in account is required to create a friend room"
+                })
+              );
+              break;
+            }
+
+            const room =
+              gameRoomManager.createRoom();
+
+            await createRoomInDatabase(
+              room.roomId,
+              6,
+              entryFee
+            );
 
             const game =
               gameManager.createGame(room.roomId);
+
+            if (mode === "bot") {
+              rummyBotService.addBot(room.roomId);
+            }
 
             await saveGameState(game);
 
@@ -74,17 +126,38 @@ export function setupWebSocket(server: Server) {
               room.roomId
             );
 
+            let inviteCode: string | undefined;
+            let inviteUrl: string | undefined;
+
+            if (mode === "friend") {
+              const invite =
+                await createFriendGameInvite(
+                  room.roomId,
+                  Number(data.createdBy),
+                  entryFee
+                );
+
+              inviteCode =
+                invite.invite_code;
+
+              inviteUrl =
+                `https://telegram-game-hvup.onrender.com/join/${inviteCode}`;
+            }
+
             socket.send(
               JSON.stringify({
                 type: "ROOM_CREATED",
                 roomId: room.roomId,
+                entryFee,
+                mode,
+                inviteCode,
+                inviteUrl,
                 playerCount: 0
               })
             );
 
             break;
           }
-
           case "JOIN_ROOM": {
             const {
               roomId,
@@ -378,6 +451,60 @@ export function setupWebSocket(server: Server) {
                   })
                 );
               }
+            }
+            if (
+              startedGame.players.some(
+                player => player.playerId === BOT_PLAYER_ID
+              )
+            ) {
+              rummyBotService.startBotTurns(
+                currentRoomId,
+                {
+                  onStateChanged: async (roomId) => {
+                    const updatedGame =
+                      gameManager.getGame(roomId);
+
+                    if (!updatedGame) {
+                      return;
+                    }
+
+                    await saveGameState(updatedGame);
+
+                    gameRoomManager.broadcast(
+                      roomId,
+                      {
+                        type: "GAME_STATE_UPDATED",
+                        game:
+                          getPublicGameState(
+                            updatedGame
+                          )
+                      }
+                    );
+                  },
+
+                  onGameFinished: async (roomId) => {
+                    const finishedGame =
+                      gameManager.getGame(roomId);
+
+                    if (!finishedGame) {
+                      return;
+                    }
+
+                    await saveGameState(finishedGame);
+
+                    gameRoomManager.broadcast(
+                      roomId,
+                      {
+                        type: "GAME_FINISHED",
+                        game:
+                          getPublicGameState(
+                            finishedGame
+                          )
+                      }
+                    );
+                  }
+                }
+              );
             }
 
             break;
@@ -935,6 +1062,15 @@ export function setupWebSocket(server: Server) {
 
   return wss;
 }
+
+
+
+
+
+
+
+
+
 
 
 

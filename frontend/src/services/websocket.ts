@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Card,
   PublicGameState,
   PrivatePlayerState
@@ -101,9 +101,11 @@ class GameWebSocket {
     );
   }
 
-  createRoom(): void {
+  createRoom(entryFee: number, mode: "bot" | "friend" | "online"): void {
     this.send({
-      type: "CREATE_ROOM"
+      type: "CREATE_ROOM",
+      entryFee,
+      mode
     });
   }
 
@@ -176,3 +178,4 @@ class GameWebSocket {
 
 export const gameWebSocket =
   new GameWebSocket();
+

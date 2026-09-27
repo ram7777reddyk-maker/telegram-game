@@ -5,6 +5,7 @@ import GameOverOverlay from "./components/GameOverOverlay";
 import LandingPage from "./LandingPage";
 import AuthPanel from "./auth/AuthPanel";
 import HomePage from "./home/HomePage";
+import GameModePage from "./home/GameModePage";
 import {
   gameWebSocket
 } from "./services/websocket";
@@ -17,6 +18,8 @@ function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [showHome, setShowHome] = useState(false);
+  const [showGameMode, setShowGameMode] = useState(false);
+  const [selectedEntryFee, setSelectedEntryFee] = useState(500);
   const [walletBalance, setWalletBalance] = useState(0);
 
   useEffect(() => {
@@ -289,6 +292,14 @@ function App() {
               setMessage(
                 `Room created: ${serverMessage.roomId}`
               );
+
+              gameWebSocket.joinRoom(
+                serverMessage.roomId,
+                savedPlayerId,
+                savedUsername || "Player"
+              );
+
+              setJoined(true);
             }
             break;
 
@@ -440,8 +451,8 @@ function App() {
     };
   }, []);
 
-  function createRoom() {
-    gameWebSocket.createRoom();
+  function createRoom(entryFee = selectedEntryFee, mode: "bot" | "friend" | "online" = "bot") {
+    gameWebSocket.createRoom(entryFee, mode);
     setMessage(
       "Creating room..."
     );
@@ -576,13 +587,38 @@ function App() {
     );
   }
 
-  if (showHome) {
+  if (showGameMode) {
+  return (
+    <GameModePage
+      entryFee={selectedEntryFee}
+      onBot={() => {
+        setShowGameMode(false);
+        createRoom(selectedEntryFee, "bot");
+      }}
+      onFriend={() => {
+        console.log("Friend mode:", selectedEntryFee);
+        setShowGameMode(false);
+      }}
+      onOnline={() => {
+        console.log("Online mode:", selectedEntryFee);
+        setShowGameMode(false);
+      }}
+      onBack={() => {
+        setShowGameMode(false);
+        setShowHome(true);
+      }}
+    />
+  );
+}
+if (showHome) {
   return (
     <HomePage
       walletBalance={walletBalance}
       onPlayRoom={(entryFee) => {
         console.log("Selected room:", entryFee);
+        setSelectedEntryFee(entryFee);
         setShowHome(false);
+        setShowGameMode(true);
       }}
       onWallet={() => {
         console.log("Wallet selected");
@@ -599,7 +635,6 @@ function App() {
     />
   );
 }
-
 if (showLanding) {
     return (
       <LandingPage
@@ -681,7 +716,7 @@ if (showLanding) {
               <button
                 className="action-button"
                 onClick={
-                  createRoom
+                  () => createRoom(500, "bot")
                 }
                 disabled={!connected}
               >
@@ -977,6 +1012,14 @@ if (showLanding) {
 }
 
 export default App;
+
+
+
+
+
+
+
+
 
 
 
