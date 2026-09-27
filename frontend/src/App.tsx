@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import Card from "./components/Card";
 import GameOverOverlay from "./components/GameOverOverlay";
@@ -547,9 +547,30 @@ function App() {
           );
 
           setUsername(name);
+          setWalletBalance(2000);
           setShowLanding(false);
-        setShowHome(true);
-          setAuthMode(null);
+
+          const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+          fetch(`${apiUrl}/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+            .then(async response => {
+              if (!response.ok) throw new Error("Failed to load account");
+              return response.json();
+            })
+            .then(data => {
+              if (data?.success && data?.wallet) {
+                setWalletBalance(Number(data.wallet.balance || 0));
+              }
+              setShowHome(true);
+              setAuthMode(null);
+            })
+            .catch(error => {
+              console.error("Failed to load wallet:", error);
+              setWalletBalance(0);
+              setShowHome(true);
+              setAuthMode(null);
+            });
         }}
       />
     );
@@ -583,6 +604,7 @@ if (showLanding) {
     return (
       <LandingPage
         onGuest={() => {
+          setWalletBalance(2000);
           setShowLanding(false);
         setShowHome(true);
         }}
@@ -955,6 +977,11 @@ if (showLanding) {
 }
 
 export default App;
+
+
+
+
+
 
 
 
